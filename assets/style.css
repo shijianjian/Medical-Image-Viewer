@@ -1,0 +1,36 @@
+body {
+    background-color: #141414;
+}
+
+div {
+    color: white;
+}
+
+.main-layout {
+    display: flex;
+}
+
+.main-board {
+    flex-grow: 1;
+    background-color: #1D1D1D;
+    min-height: 100vh;
+    max-height: 100vh;
+}
+
+.side-board {
+    background-color: #1D1D1D;
+    margin-left: 10px;
+    padding: 10px;
+    min-height: 100vh;
+    max-height: 100vh;
+}
+
+#img-3d-plot {
+    background-color: #1D1D1D;
+
+}
+
+.img-axis-control {
+    display: flex;
+    justify-content: space-between;
+}
