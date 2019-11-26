@@ -30,6 +30,29 @@ img_plot_controls = html.Div(children=[
         # Allow multiple files to be uploaded
         multiple=True
     ),
+    html.Div("Inspect Faces:"),
+    dcc.Dropdown(
+        id="inspect-faces-control",
+        options=[
+            {'label': 'Show All faces', 'value': 'all'},
+            {'label': 'Inspect Selected face', 'value': 'custom'},
+        ],
+        value='all',
+        style={'color': "#141414"}
+    ),
+    dcc.Checklist(
+        id="inspect-face-control",
+        options=[
+            {'label': 'XY Up', 'value': 'xy-up'},
+            {'label': 'XY Down', 'value': 'xy-down'},
+            {'label': 'YZ Up', 'value': 'yz-up'},
+            {'label': 'YZ Down', 'value': 'yz-down'},
+            {'label': 'ZX Up', 'value': 'zx-up'},
+            {'label': 'ZX Down', 'value': 'zx-down'}
+        ],
+        value=['xy-up', 'xy-down', 'yz-up', 'yz-down', 'zx-up', 'zx-down'],
+        labelStyle={'display': 'block'}
+    ),
     html.Div("x-axis"),
     dcc.RangeSlider(
         id='i-slider',
