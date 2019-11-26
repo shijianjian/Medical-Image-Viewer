@@ -50,24 +50,27 @@ app.layout = html.Div(
     ]
 )
 
-plot_layout = {
-    "title": "",
-    "type": "surface",
-    "margin": {"t": 0, "b": 0, "l": 0, "r": 0},
-    # "font": {"size": 12, "color": "white"},
-    "showlegend": False,
-    "showscale": False,
-    "plot_bgcolor": "#1D1D1D",
-    "paper_bgcolor": "#1D1D1D",
-    "scene": {
-        # "xaxis": axis_template,
-        # "yaxis": axis_template,
-        # "zaxis": axis_template,
-        "aspectratio": {"x": 1, "y": 1.2, "z": 1},
-        "camera": {"eye": {"x": 1.25, "y": 1.25, "z": 1.25}},
-        "annotations": [],
-    },
-}
+
+def get_plot_layout(state):
+    return {
+        "title": "",
+        "type": "surface",
+        "margin": {"t": 0, "b": 0, "l": 0, "r": 0},
+        # "font": {"size": 12, "color": "white"},
+        "showlegend": False,
+        "showscale": False,
+        "plot_bgcolor": "#1D1D1D",
+        "paper_bgcolor": "#1D1D1D",
+        "dragmode": "orbit",
+        "scene": {
+            "xaxis": {"range": [0, state['image']['shape'][0]]},
+            "yaxis": {"range": [0, state['image']['shape'][1]]},
+            "zaxis": {"range": [0, state['image']['shape'][2]]},
+            "aspectratio": {"x": 1, "y": 1.2, "z": 1},
+            "camera": {"eye": {"x": 1.25, "y": 1.25, "z": 1.25}},
+            "annotations": [],
+        },
+    }
 
 
 @app.callback(
@@ -108,6 +111,7 @@ def update_j_slider(i_in):
 def update_k_slider(i_in):
     return i_in[0], i_in[1]
 
+
 def update_surface_plot(i_in, j_in, k_in):
     i, i_l = i_in
     j, j_l = j_in
@@ -115,8 +119,9 @@ def update_surface_plot(i_in, j_in, k_in):
     data = make_cube_faces(state['image']['img'], i, i_l, j, j_l, k, k_l)
     return {
         "data": data,
-        'layout': plot_layout
+        'layout': get_plot_layout(state)
     }
+
 
 @app.callback(
     [
@@ -145,20 +150,18 @@ def update_img_state(img, filename):
 
         if filename[0].endswith('.img'):
             if len(img) == 67108864:
-                img = img.reshape(128, 1024, 512)
                 state['image']['shape'] = (128, 1024, 512)
             elif len(img) == 40960000:
-                img = img.reshape(200, 1024, 200)
                 state['image']['shape'] = (200, 1024, 200)
             else:
-                raise ValueError()
+                raise ValueError("Unknown length of IMG.")
             state['image']['filename'] = filename[0]
-            state['image']['img'] = img
+            state['image']['img'] = img.reshape(state['image']['shape'])
         else:
             raise ValueError()
-    
+
     return state['image']['shape'][0] - 1, state['image']['shape'][1] - 1, state['image']['shape'][2] - 1, \
-        [0, state['image']['shape'][0] -  1], [0, state['image']['shape'][1] - 1], [0, state['image']['shape'][2] - 1], \
+        [0, state['image']['shape'][0] - 1], [0, state['image']['shape'][1] - 1], [0, state['image']['shape'][2] - 1], \
         state['image']['filename']
 
 
@@ -175,7 +178,7 @@ def update_surface_plot_data(i_in, j_in, k_in, filename):
     if filename == "":
         return {
             "data": [],
-            'layout': plot_layout
+            'layout': get_plot_layout(state)
         }
 
     return update_surface_plot(i_in, j_in, k_in)
