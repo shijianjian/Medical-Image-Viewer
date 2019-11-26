@@ -18,3 +18,12 @@ With the updated ```app.spec``` file, you may run:
 ```
 $ pyinstaller app.spec
 ```
+
+For cross-platform builds, it is recommand to use [docker-pyinstaller](https://github.com/cdrx/docker-pyinstaller).
+
+## Screenshots
+![screenshot](./misc/sc.png)
+
+## Known issues
+- The renderer is a bit slow. It is an issues with the ```dash``` library as well as there are six 3D cube rendering tasks. It is recommanded to use the ```Inspect Selected face``` instead of view all the faces.
+- UPX is not avaliable for now.
