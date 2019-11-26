@@ -35,6 +35,7 @@ def get_plot_layout(state):
         },
     }
 
+
 def make_cube_face_YZ(img, x, y, z, i, i_l):
     Y, Z = np.meshgrid(y, z)
     xm = i * np.ones(Y.shape)

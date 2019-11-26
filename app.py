@@ -4,17 +4,28 @@ import dash_core_components as dcc
 import dash_html_components as html
 import numpy as np
 import base64
+import sys
+import os
 from io import BytesIO
 from dash.dependencies import Input, Output, State
+from pyfladesk import init_gui
 
 from utils import make_cube_face_YZ, make_cube_face_XY, make_cube_face_ZX, get_plot_layout
 from side_controls import img_plot_controls
 
-external_stylesheets = [
-    # 'https://codepen.io/chriddyp/pen/bWLwgP.css'
-]
 
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+def resource_path(relative_path):
+    # get absolute path to resource
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
+
+app = dash.Dash(__name__, assets_folder=resource_path('assets'))
 
 state = {
     "image": {
@@ -259,4 +270,7 @@ def update_surface_plot_data(i_in, j_in, k_in, faces, filename):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    # For GUI application
+    init_gui(app.server, window_title="Cirrus IMG Viewer")
+    # For development
+    # app.run_server(debug=True)
