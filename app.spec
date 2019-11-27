@@ -4,7 +4,11 @@ block_cipher = None
 
 
 a = Analysis(['app.py'],
-             pathex=['/home/ovs-dl/git/Medical_IMG-viewer'],
+             pathex=[
+                 '/home/ovs-dl/git/Medical_IMG-viewer',
+                 "C:/Python36/lib/site-packages/PyQt5/Qt/bin",
+                "./qt_assets"
+             ],
              binaries=[],
              datas=[
                  ('./dash_assets/package-info.json', 'dash_core_components'), 
@@ -51,4 +55,4 @@ exe = EXE(pyz,
           upx=True,
           upx_exclude=[],
           runtime_tmpdir=None,
-          console=False )
+          console=True )
