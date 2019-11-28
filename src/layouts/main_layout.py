@@ -3,6 +3,8 @@ import dash_core_components as dcc
 import dash_html_components as html
 import uuid
 
+from layouts.side_controls_layout import stereo_controls
+
 
 def main_side_controls():
     return html.Div(children=[
@@ -25,14 +27,10 @@ def main_side_controls():
             # Allow multiple files to be uploaded
             multiple=True
         ),
-        html.Div([
-            dcc.Tabs(id="tabs", value='2d', children=[
-                dcc.Tab(label='2D', value='2d'),
-                dcc.Tab(label='3D', value='3d'),
-            ]),
-            html.Div(id="tabs-content")
-        ]),
-    ])
+        stereo_controls()
+    ], style={
+        'min-width': '100px'
+    })
 
 
 def main_plot_layout():

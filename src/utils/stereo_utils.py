@@ -1,4 +1,5 @@
 import numpy as np
+from state import StateSingleton
 
 
 def make_cube_face(x, y, z, surfacecolor, name="face"):
@@ -61,3 +62,42 @@ def make_cube_face_XY(img, x, y, z, k, k_l):
     trace_zm = make_cube_face(x=X, y=Y, z=zm, surfacecolor=np.expand_dims(img[:, :, k].T, axis=-1), name="z_min")
     trace_zM = make_cube_face(x=X, y=Y, z=zM, surfacecolor=np.expand_dims(img[:, :, k_l].T, axis=-1), name="z_max")
     return [trace_zm, trace_zM]
+
+
+def update_surface_plot(i_in, j_in, k_in, state):
+    i, i_l = i_in
+    j, j_l = j_in
+    k, k_l = k_in
+
+    img = state['image']['img']
+    x = np.linspace(i, i_l, i_l - i + 1)
+    y = np.linspace(j, j_l, j_l - j + 1)
+    z = np.linspace(k, k_l, k_l - k + 1)
+    faces = state['controls']['faces']
+    YZ = make_cube_face_YZ(img, x, y, z, i, i_l)
+    state['plot']['YZ'] = YZ
+    ZX = make_cube_face_ZX(img, x, y, z, j, j_l)
+    state['plot']['ZX'] = ZX
+    XY = make_cube_face_XY(img, x, y, z, k, k_l)
+    state['plot']['XY'] = XY
+    stateIns = StateSingleton()
+    stateIns.set_state(state)
+
+    data = []
+    if "xy-up" in faces:
+        data.append(XY[1])
+    if "xy-down" in faces:
+        data.append(XY[0])
+    if "yz-up" in faces:
+        data.append(YZ[1])
+    if "yz-down" in faces:
+        data.append(YZ[0])
+    if "zx-up" in faces:
+        data.append(ZX[1])
+    if "zx-down" in faces:
+        data.append(ZX[0])
+    return {
+        "data": data,
+        'layout': get_plot_layout(state)
+    }
+

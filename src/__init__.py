@@ -7,13 +7,6 @@ import sys
 import os
 
 
-# def get_dash_args_from_flask_config(config):
-#     """Get a dict of Dash params that were specified """
-#     # all arg names less 'self'
-#     dash_args = set(inspect.getfullargspec(dash.Dash.__init__).args[1:])
-#     return {key.lower(): val for key, val in config.items() if key.lower() in dash_args}
-
-
 def resource_path(relative_path):
     # get absolute path to resource
     try:
@@ -47,15 +40,14 @@ def create_dash(server):
         name=__package__,
         server=server,
         suppress_callback_exceptions=True,
-        assets_folder=resource_path('assets'),
-        # **get_dash_args_from_flask_config(server.config),
+        assets_folder=resource_path('assets')
     )
 
     # Update the Flask config a default "TITLE" and then with any new Dash
     # configuration parameters that might have been updated so that we can
     # access Dash config easily from anywhere in the project with Flask's
     # 'current_app'
-    server.config.setdefault("TITLE", "Dash")
+    server.config.setdefault("TITLE", "Cirrus IMG Viewer")
     server.config.update({key.upper(): val for key, val in app.config.items()})
 
     app.title = server.config["TITLE"]
