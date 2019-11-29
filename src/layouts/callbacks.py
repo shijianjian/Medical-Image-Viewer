@@ -56,7 +56,10 @@ def register_callbacks(app):
         return [0, i_m], [0, j_m], [0, k_m], i_m, j_m, k_m
 
     @app.callback(
-        Output('img-3d-state', 'data'),
+        [
+            Output('img-3d-state', 'data'),
+            Output('img-filename', 'children')
+        ],
         [
             Input('upload-img-data', 'contents'),
         ],
@@ -86,7 +89,7 @@ def register_callbacks(app):
             state['data'] = img.reshape(img_state['shape'])
         else:
             raise IncorrectTypeException
-        return img_state
+        return img_state, filename
 
     @app.callback(
         [

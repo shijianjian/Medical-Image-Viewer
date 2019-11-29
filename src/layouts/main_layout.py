@@ -42,15 +42,25 @@ def main_plot_layout():
             html.Div(
                 children=[
                     html.H1(children='Cirrus IMG Viewer'),
-                    html.Div(children='''
-                        Cirrus OCT raw IMG viewer.
-                    '''),
-                    html.Div(
-                        id="img-filename",
-                        children=""
+                    dcc.Loading(
+                        loading_state={'is_loading': True},
+                        children=[
+                            html.Div(
+                                id="img-filename",
+                                children=""
+                            )
+                        ],
+                        type="dot"
                     ),
                     dcc.Store(id='img-3d-state', storage_type='memory'),
-                    dcc.Graph(id='img-3d-plot')
+                    dcc.Loading(
+                        id="img-3d-loading",
+                        children=[
+                            dcc.Graph(id='img-3d-plot')
+                        ],
+                        loading_state={'is_loading': True},
+                        type="cube"
+                    )
                 ],
                 className="main-board"
             ),
