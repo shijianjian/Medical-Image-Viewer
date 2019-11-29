@@ -53,14 +53,7 @@ def main_plot_layout():
                         type="dot"
                     ),
                     dcc.Store(id='img-3d-state', storage_type='memory'),
-                    dcc.Loading(
-                        id="img-3d-loading",
-                        children=[
-                            dcc.Graph(id='img-3d-plot')
-                        ],
-                        loading_state={'is_loading': True},
-                        type="cube"
-                    )
+                    dcc.Graph(id='img-3d-plot')
                 ],
                 className="main-board"
             ),

@@ -20,7 +20,6 @@ def register_callbacks(app):
         ]
     )
     def update_slider_state(i_in, j_in, k_in):
-        print(i_in, j_in, k_in)
         controls = {}
         controls['i_min'] = i_in[0]
         controls['i_max'] = i_in[1]
@@ -35,15 +34,24 @@ def register_callbacks(app):
             Output("i-slider", "value"),
             Output("j-slider", "value"),
             Output("k-slider", "value"),
+            Output("i_min", "children"),
+            Output("i_max", "children"),
+            Output("j_min", "children"),
+            Output("j_max", "children"),
+            Output("k_min", "children"),
+            Output("k_max", "children"),
             Output('i-slider', 'max'),
             Output('j-slider', 'max'),
             Output('k-slider', 'max'),
         ],
         [
-            Input('img-3d-state', 'data')
+            Input('img-3d-state', 'modified_timestamp')
+        ],
+        [
+            State('img-3d-state', 'data')
         ]
     )
-    def update_slider_range(img):
+    def update_slider_range(_, img):
         # Use modified_timestamp to get the initial value
         if img is None:
             i_m = 20
@@ -53,7 +61,7 @@ def register_callbacks(app):
             i_m = img['shape'][0] - 1
             j_m = img['shape'][1] - 1
             k_m = img['shape'][2] - 1
-        return [0, i_m], [0, j_m], [0, k_m], i_m, j_m, k_m
+        return [0, i_m], [0, j_m], [0, k_m], 0, i_m, 0, j_m, 0, k_m, i_m, j_m, k_m
 
     @app.callback(
         [
@@ -92,31 +100,15 @@ def register_callbacks(app):
         return img_state, filename
 
     @app.callback(
+        Output("face-control-state", "data"),
         [
-            Output("inspect-face-control", "style"),
-            Output("face-control-state", "data")
-        ],
-        [
-            Input("inspect-faces-control", "value"),
-            Input("face-control-state", "modified_timestamp")
-        ],
-        [
-            State("face-control-state", "data"),
-            State("inspect-face-control", "value")
+            Input("inspect-face-control", "value")
         ]
     )
-    def update_faces_control(value, _, data, faces):
+    def update_faces_control(faces):
         face_state = {}
-        face_state['mode'] = value
-        if value == "all":
-            face_state['faces'] = ['xy-up', 'xy-down', 'yz-up', 'yz-down', 'zx-up', 'zx-down']
-            return {"display": "none"}, face_state
-        else:
-            if data is not None:
-                face_state['faces'] = data['faces']
-            else:
-                face_state['faces'] = faces
-            return {"display": "block"}, data
+        face_state['faces'] = faces
+        return face_state
 
     @app.callback(
         [

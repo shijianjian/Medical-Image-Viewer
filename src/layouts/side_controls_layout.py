@@ -7,15 +7,6 @@ def stereo_controls(slider_controls=[20, 20, 20]):
     i_l, j_l, k_l = slider_controls
     return html.Div(children=[
         html.Div("Inspect Faces:"),
-        dcc.Dropdown(
-            id="inspect-faces-control",
-            options=[
-                {'label': 'Show All faces', 'value': 'all'},
-                {'label': 'Inspect Selected face', 'value': 'custom'},
-            ],
-            value='all',
-            style={'color': "#141414"}
-        ),
         dcc.Checklist(
             id="inspect-face-control",
             options=[
@@ -26,7 +17,7 @@ def stereo_controls(slider_controls=[20, 20, 20]):
                 {'label': 'ZX Up', 'value': 'zx-up'},
                 {'label': 'ZX Down', 'value': 'zx-down'}
             ],
-            value=['xy-up', 'xy-down', 'yz-up', 'yz-down', 'zx-up', 'zx-down'],
+            value=['xy-up'],
             labelStyle={'display': 'block'}
         ),
         dcc.Store(id='slider-control-state', storage_type='session'),

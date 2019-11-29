@@ -33,7 +33,12 @@ $ docker run -v "$(pwd):/src/" cdrx/pyinstaller-windows
 ## Screenshots
 ![screenshot](./misc/sc.png)
 
+## TODOs
+- Enable DICOM OCT/Fundus reading directly.
+- Enable 2D image visual.
+
 ## Known issues
-- The renderer is a bit slow. It is an issues with the ```dash``` library as well as there are six 3D cube rendering tasks. It is recommanded to use the ```Inspect Selected face``` instead of view all the faces.
+- For Windows users, it might encounter a WebGL driver issue from PyQT WebEngine. Inspect the console for the URL will be easier than install the driver.
+- The renderer is a bit slow. It is an issues with the ```dash``` library as well as there are six 3D cube rendering tasks. By default, the ```Inspect Face``` enables one face only for a better speed instead of view all the faces.
 - UPX is not avaliable for Windows builds.
 - Error will occur with Pyinstaller for windows build when [PyQT5 >= 5.12.3](https://github.com/pyinstaller/pyinstaller/issues/4293)
