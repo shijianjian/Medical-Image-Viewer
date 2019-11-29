@@ -4,62 +4,116 @@ from io import BytesIO
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output, State
+from dash.exceptions import IncorrectTypeException, PreventUpdate
 
 from state import StateSingleton
 from utils.stereo_utils import update_surface_plot, get_plot_layout
 
 
-def register_slider_callbacks(app):
+def register_callbacks(app):
     @app.callback(
+        Output('slider-control-state', 'data'),
         [
-            Output("i_min", "children"),
-            Output("i_max", "children")
-        ],
-        [
-            Input("i-slider", "value")
-        ]
-    )
-    def update_i_slider(i_in):
-        stateIns = StateSingleton()
-        state = stateIns.get_state()
-        state["controls"]['i_min'] = i_in[0]
-        state["controls"]['i_max'] = i_in[1]
-        stateIns.set_state(state)
-        return i_in[0], i_in[1]
-
-    @app.callback(
-        [
-            Output("j_min", "children"),
-            Output("j_max", "children")
-        ],
-        [
-            Input("j-slider", "value")
-        ]
-    )
-    def update_j_slider(i_in):
-        stateIns = StateSingleton()
-        state = stateIns.get_state()
-        state["controls"]['j_min'] = i_in[0]
-        state["controls"]['j_max'] = i_in[1]
-        stateIns.set_state(state)
-        return i_in[0], i_in[1]
-
-    @app.callback(
-        [
-            Output("k_min", "children"),
-            Output("k_max", "children")
-        ],
-        [
+            Input("i-slider", "value"),
+            Input("j-slider", "value"),
             Input("k-slider", "value")
         ]
     )
-    def update_k_slider(i_in):
+    def update_slider_state(i_in, j_in, k_in):
+        print(i_in, j_in, k_in)
+        controls = {}
+        controls['i_min'] = i_in[0]
+        controls['i_max'] = i_in[1]
+        controls['j_min'] = j_in[0]
+        controls['j_max'] = j_in[1]
+        controls['k_min'] = k_in[0]
+        controls['k_max'] = k_in[1]
+        return controls
+
+    @app.callback(
+        [
+            Output("i-slider", "value"),
+            Output("j-slider", "value"),
+            Output("k-slider", "value"),
+            Output('i-slider', 'max'),
+            Output('j-slider', 'max'),
+            Output('k-slider', 'max'),
+        ],
+        [
+            Input('img-3d-state', 'data')
+        ]
+    )
+    def update_slider_range(img):
+        # Use modified_timestamp to get the initial value
+        if img is None:
+            i_m = 20
+            j_m = 20
+            k_m = 20
+        else:
+            i_m = img['shape'][0] - 1
+            j_m = img['shape'][1] - 1
+            k_m = img['shape'][2] - 1
+        return [0, i_m], [0, j_m], [0, k_m], i_m, j_m, k_m
+
+    @app.callback(
+        Output('img-3d-state', 'data'),
+        [
+            Input('upload-img-data', 'contents'),
+        ],
+        [
+            State('upload-img-data', 'filename')
+        ]
+    )
+    def update_img_3d_state(img, filename):
+        if img is None:
+            raise PreventUpdate
         stateIns = StateSingleton()
         state = stateIns.get_state()
-        state["controls"]['k_min'] = i_in[0]
-        state["controls"]['k_max'] = i_in[1]
-        stateIns.set_state(state)
-        return i_in[0], i_in[1]
+        print("Recieving file:", filename)
+        img_state = {}
+        img = base64.b64decode(img[0].split("base64,")[1])
+        img = BytesIO(img)
+        img = np.frombuffer(img.getbuffer(), np.uint8)
+
+        if filename[0].endswith('.img'):
+            if len(img) == 67108864:
+                img_state['shape'] = (128, 1024, 512)
+            elif len(img) == 40960000:
+                img_state['shape'] = (200, 1024, 200)
+            else:
+                raise IncorrectTypeException
+            img_state['filename'] = filename[0]
+            state['data'] = img.reshape(img_state['shape'])
+        else:
+            raise IncorrectTypeException
+        return img_state
+
+    @app.callback(
+        [
+            Output("inspect-face-control", "style"),
+            Output("face-control-state", "data")
+        ],
+        [
+            Input("inspect-faces-control", "value"),
+            Input("face-control-state", "modified_timestamp")
+        ],
+        [
+            State("face-control-state", "data"),
+            State("inspect-face-control", "value")
+        ]
+    )
+    def update_faces_control(value, _, data, faces):
+        face_state = {}
+        face_state['mode'] = value
+        if value == "all":
+            face_state['faces'] = ['xy-up', 'xy-down', 'yz-up', 'yz-down', 'zx-up', 'zx-down']
+            return {"display": "none"}, face_state
+        else:
+            if data is not None:
+                face_state['faces'] = data['faces']
+            else:
+                face_state['faces'] = faces
+            return {"display": "block"}, data
 
     @app.callback(
         [
@@ -87,112 +141,32 @@ def register_slider_callbacks(app):
         return j_style, k_style, i_style
 
     @app.callback(
-        [
-            Output('i-slider', 'max'),
-            Output('j-slider', 'max'),
-            Output('k-slider', 'max'),
-            Output('i-slider', 'value'),
-            Output('j-slider', 'value'),
-            Output('k-slider', 'value'),
-            Output('img-filename', 'children')
-        ],
-        [
-            Input('upload-img-data', 'contents'),
-        ],
-        [
-            State('upload-img-data', 'filename')
-        ]
-    )
-    def update_img_state(img, filename):
-        stateIns = StateSingleton()
-        state = stateIns.get_state()
-        old_shape = state['image']['shape']
-        if img is None:
-            state['image']['filename'] = ""
-            state['image']['shape'] = (200, 1024, 200)
-        elif filename[0] != state['image']['filename']:
-            img = base64.b64decode(img[0].split("base64,")[1])
-            img = BytesIO(img)
-            img = np.frombuffer(img.getbuffer(), np.uint8)
-
-            if filename[0].endswith('.img'):
-                if len(img) == 67108864:
-                    state['image']['shape'] = (128, 1024, 512)
-                elif len(img) == 40960000:
-                    state['image']['shape'] = (200, 1024, 200)
-                else:
-                    raise ValueError("Unknown length of IMG.")
-                state['image']['filename'] = filename[0]
-                state['image']['img'] = img.reshape(state['image']['shape'])
-            else:
-                raise ValueError()
-
-        if old_shape == state['image']['shape']:
-            stateIns.set_state(state)
-            return state['image']['shape'][0] - 1, state['image']['shape'][1] - 1, state['image']['shape'][2] - 1, \
-                [state['controls']['i_min'], state['controls']['i_max']], \
-                [state['controls']['j_min'], state['controls']['j_max']], \
-                [state['controls']['k_min'], state['controls']['k_max']], \
-                state['image']['filename']
-        else:
-            # Refresh slider only when shape updated
-            state['controls']['i_min'] = 0
-            state['controls']['j_min'] = 0
-            state['controls']['k_min'] = 0
-            state['controls']['i_max'] = state['image']['shape'][0] - 1
-            state['controls']['j_max'] = state['image']['shape'][1] - 1
-            state['controls']['k_max'] = state['image']['shape'][2] - 1
-            stateIns.set_state(state)
-            return state['controls']['i_max'], state['controls']['j_max'], state['controls']['k_max'], \
-                [0, state['controls']['i_max']], [0, state['controls']['j_max']], [0, state['controls']['k_max']], \
-                state['image']['filename']
-
-    @app.callback(
         Output('img-3d-plot', 'figure'),
         [
-            Input('i-slider', 'value'),
-            Input('j-slider', 'value'),
-            Input('k-slider', 'value'),
-            Input("inspect-face-control", 'value'),
-            Input('img-filename', 'children')
+            Input('img-3d-state', 'data'),
+            Input('slider-control-state', 'data'),
+            Input("face-control-state", "data")
         ]
     )
-    def update_surface_plot_data(i_in, j_in, k_in, faces, filename):
+    def update_surface_plot_data(img_state, slider_control, face_control):
         stateIns = StateSingleton()
         state = stateIns.get_state()
-        state['controls']['faces'] = faces
-        state['controls']['i_min'] = i_in[0]
-        state['controls']['j_min'] = j_in[0]
-        state['controls']['k_min'] = k_in[0]
-        state['controls']['i_max'] = i_in[1]
-        state['controls']['j_max'] = j_in[1]
-        state['controls']['k_max'] = j_in[1]
+        state['image'] = img_state
+        state['controls']['slider'] = slider_control
+        state['controls']['faces'] = face_control
+        print(state['controls'])
+        print(state['image'])
         stateIns.set_state(state)
-        if filename == "":
-            return {
+        if img_state is None:
+            print("Return Empty Graph.")
+            s = {}
+            s['image'] = {}
+            s['image']['shape'] = (20, 20, 20)
+            res = {
                 "data": [],
-                'layout': get_plot_layout(stateIns.get_state())
+                'layout': get_plot_layout(s)
             }
-        res = update_surface_plot(i_in, j_in, k_in, stateIns.get_state())
-        return res
-
-
-def register_face_callbacks(app):
-    @app.callback(
-        [
-            Output("inspect-face-control", "style"),
-            Output("inspect-face-control", "value")
-        ],
-        [
-            Input("inspect-faces-control", "value")
-        ]
-    )
-    def update_faces_control(value):
-        stateIns = StateSingleton()
-        state = stateIns.get_state()
-        if value == "all":
-            state['controls']['faces'] = ['xy-up', 'xy-down', 'yz-up', 'yz-down', 'zx-up', 'zx-down']
-            stateIns.set_state(state)
-            return {"display": "none"}, state['controls']['faces']
         else:
-            return {"display": "block"}, state['controls']['faces']
+            print("Graph Calculated.")
+            res = update_surface_plot(stateIns.get_state())
+        return res

@@ -29,7 +29,7 @@ def main_side_controls():
         ),
         stereo_controls()
     ], style={
-        'min-width': '100px'
+        'minWidth': '100px'
     })
 
 
@@ -49,6 +49,7 @@ def main_plot_layout():
                         id="img-filename",
                         children=""
                     ),
+                    dcc.Store(id='img-3d-state', storage_type='memory'),
                     dcc.Graph(id='img-3d-plot')
                 ],
                 className="main-board"

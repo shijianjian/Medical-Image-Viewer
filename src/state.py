@@ -25,9 +25,9 @@ class AppSingleton(object):
 class StateSingleton(object):
     def __init_state__(self):
         self.state = {
+            "data": None,
             "image": {
                 "filename": None,
-                "img": None,
                 "shape": (None, None, None)
             },
             "plot": {
@@ -36,12 +36,18 @@ class StateSingleton(object):
                 "YZ": None
             },
             "controls": {
-                "i_min": None,
-                "i_max": None,
-                "j_min": None,
-                "j_max": None,
-                "k_min": None,
-                "k_max": None
+                "slider": {
+                    "i_min": None,
+                    "i_max": None,
+                    "j_min": None,
+                    "j_max": None,
+                    "k_min": None,
+                    "k_max": None,
+                },
+                "faces": {
+                    "mode": None,
+                    "faces": None
+                }
             }
         }
 

@@ -2,7 +2,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 
 
-def stereo_controls(slider_controls=[199, 1023, 199]):
+def stereo_controls(slider_controls=[20, 20, 20]):
     i, j, k = [0, 0, 0]
     i_l, j_l, k_l = slider_controls
     return html.Div(children=[
@@ -29,6 +29,8 @@ def stereo_controls(slider_controls=[199, 1023, 199]):
             value=['xy-up', 'xy-down', 'yz-up', 'yz-down', 'zx-up', 'zx-down'],
             labelStyle={'display': 'block'}
         ),
+        dcc.Store(id='slider-control-state', storage_type='session'),
+        dcc.Store(id='face-control-state', storage_type='session'),
         html.Div("x-axis"),
         dcc.RangeSlider(
             id='i-slider',

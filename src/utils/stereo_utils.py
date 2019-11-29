@@ -64,16 +64,19 @@ def make_cube_face_XY(img, x, y, z, k, k_l):
     return [trace_zm, trace_zM]
 
 
-def update_surface_plot(i_in, j_in, k_in, state):
-    i, i_l = i_in
-    j, j_l = j_in
-    k, k_l = k_in
+def update_surface_plot(state):
+    i = state['controls']['slider']['i_min']
+    j = state['controls']['slider']['j_min']
+    k = state['controls']['slider']['k_min']
+    i_l = state['controls']['slider']['i_max']
+    j_l = state['controls']['slider']['j_max']
+    k_l = state['controls']['slider']['k_max']
 
-    img = state['image']['img']
+    img = state['data']
     x = np.linspace(i, i_l, i_l - i + 1)
     y = np.linspace(j, j_l, j_l - j + 1)
     z = np.linspace(k, k_l, k_l - k + 1)
-    faces = state['controls']['faces']
+    faces = state['controls']['faces']['faces']
     YZ = make_cube_face_YZ(img, x, y, z, i, i_l)
     state['plot']['YZ'] = YZ
     ZX = make_cube_face_ZX(img, x, y, z, j, j_l)
@@ -100,4 +103,3 @@ def update_surface_plot(i_in, j_in, k_in, state):
         "data": data,
         'layout': get_plot_layout(state)
     }
-
