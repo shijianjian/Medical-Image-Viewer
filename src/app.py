@@ -11,6 +11,13 @@ from layouts.callbacks import (
 
 
 if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser(description="")
+    parser.add_argument('--debug', action='store_true')
+    args = parser.parse_args()
+
+    DEBUG_MODE = args.debug
+
     from state import AppSingleton
 
     appIns = AppSingleton()
@@ -35,4 +42,7 @@ if __name__ == '__main__':
     # init_gui(app.server, window_title="Cirrus IMG Viewer")
     # For development
     app.config['suppress_callback_exceptions'] = True
-    app.run_server(debug=True)
+    if DEBUG_MODE:
+        app.run_server(debug=DEBUG_MODE)
+    else:
+        app.run_server(debug=DEBUG_MODE, host="0.0.0.0")

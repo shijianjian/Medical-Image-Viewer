@@ -12,6 +12,19 @@ For development, simply:
 $ python app.py
 ```
 
+### Docker Serving
+Minimum requirement for running a docker server contains:
+    - src
+    - Dockerfile
+    - requirements-web.txt
+
+For building docker image and run:
+```
+$ docker build -t oct-viewer .
+$ docker run -d --name oct_viewer_app -p 8050:8050 oct-viewer
+```
+
+### Desktop Builds
 For build for desktop, you will need to edit the dependency path for ```app.spec``` for your environment for those *.js files, which will be ignored by the Pyinstaller, for a light-weight application, it would be the best to create a new environment for building this app only with the packages only needed.
 
 With the updated ```app.spec``` file, you may run:
