@@ -5,7 +5,8 @@ from layouts.callbacks import (
     register_stereo_control_callbacks,
     register_2d_plot_callbacks,
     register_3d_plot_callbacks,
-    register_plane_control_callbacks
+    register_plane_control_callbacks,
+    register_cnn_model_callbacks
 )
 
 
@@ -28,6 +29,7 @@ if __name__ == '__main__':
         register_stereo_control_callbacks(app)
         register_2d_plot_callbacks(app)
         register_3d_plot_callbacks(app)
+        # register_cnn_model_callbacks(app)
     # For GUI application
     # from pyfladesk import init_gui
     # init_gui(app.server, window_title="Cirrus IMG Viewer")

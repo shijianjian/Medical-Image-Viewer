@@ -93,12 +93,6 @@ def register_stereo_control_callbacks(app):
             Output("i-slider", "value"),
             Output("j-slider", "value"),
             Output("k-slider", "value"),
-            Output("i_min", "children"),
-            Output("i_max", "children"),
-            Output("j_min", "children"),
-            Output("j_max", "children"),
-            Output("k_min", "children"),
-            Output("k_max", "children"),
             Output('i-slider', 'max'),
             Output('j-slider', 'max'),
             Output('k-slider', 'max'),
@@ -120,7 +114,25 @@ def register_stereo_control_callbacks(app):
             i_m = img['shape'][0] - 1
             j_m = img['shape'][1] - 1
             k_m = img['shape'][2] - 1
-        return [0, i_m], [0, j_m], [0, k_m], 0, i_m, 0, j_m, 0, k_m, i_m, j_m, k_m
+        return [0, i_m], [0, j_m], [0, k_m], i_m, j_m, k_m
+    
+    @app.callback(
+        [
+            Output("i_min", "children"),
+            Output("i_max", "children"),
+            Output("j_min", "children"),
+            Output("j_max", "children"),
+            Output("k_min", "children"),
+            Output("k_max", "children"),
+        ],
+        [
+            Input("i-slider", "value"),
+            Input("j-slider", "value"),
+            Input("k-slider", "value"),
+        ]
+    )
+    def update_slider_range(i_m, j_m, k_m):
+        return i_m[0], i_m[1], j_m[0], j_m[1], k_m[0], k_m[1]
 
     @app.callback(
         Output("face-control-state", "data"),
@@ -182,10 +194,7 @@ def register_plane_control_callbacks(app):
             Output('k-slider_p', 'max'),
             Output('i-slider_p', 'value'),
             Output('j-slider_p', 'value'),
-            Output('k-slider_p', 'value'),
-            Output('i_max_p', 'children'),
-            Output('j_max_p', 'children'),
-            Output('k_max_p', 'children'),
+            Output('k-slider_p', 'value')
         ],
         [
             Input('img-3d-state', 'modified_timestamp')
@@ -204,8 +213,41 @@ def register_plane_control_callbacks(app):
             i_m = img['shape'][0] - 1
             j_m = img['shape'][1] - 1
             k_m = img['shape'][2] - 1
-        return i_m, j_m, k_m, i_m, j_m, k_m, i_m, j_m, k_m
+        return i_m, j_m, k_m, i_m, j_m, k_m
+    
+    @app.callback(
+        [
+            Output('i_max_p', 'children'),
+            Output('j_max_p', 'children'),
+            Output('k_max_p', 'children'),
+        ],
+        [
+            Input('i-slider_p', 'value'),
+            Input('j-slider_p', 'value'),
+            Input('k-slider_p', 'value'),
+        ]
+    )
+    def update_slider_view(i_m, j_m, k_m):
+        return i_m, j_m, k_m
 
+
+
+def register_cnn_model_callbacks(app):
+    @app.callback(
+        [
+            Output('output-load-model-btn', 'style'),
+            Output('output-load-model-text', 'children'),
+        ],
+        [
+            Input('load-model-btn', 'n_clicks')
+        ]
+    )
+    def on_load_model_btn_clicked(click):
+        if click is None:
+            return {'display': 'none'}, ''
+        # import tensorflow as tf
+        # model = tf.saved_model.load("./assets/saved_model")
+        return {'display': 'block'}, 'Not implemented.'
 
 
 def register_2d_plot_callbacks(app):
@@ -246,7 +288,7 @@ def register_2d_plot_callbacks(app):
         return update_2d_plot_data_by_axis(img_state, slider_control, face_control, view_mode, "k")
 
     def update_2d_plot_data_by_axis(img_state, slider_control, face_control, view_mode, axis):
-        if view_mode["view"] == "3d":
+        if view_mode is None or view_mode["view"] == "3d":
             raise PreventUpdate
         layout = go.Layout(
             autosize=True,
@@ -305,15 +347,13 @@ def register_3d_plot_callbacks(app):
         ]
     )
     def update_surface_plot_data(img_state, slider_control, face_control, view_mode):
-        if view_mode["view"] == "2d":
+        if view_mode is None or view_mode["view"] == "2d":
             raise PreventUpdate
         stateIns = StateSingleton()
         state = stateIns.get_state()
         state['image'] = img_state
         state['controls']['slider'] = slider_control
         state['controls']['faces'] = face_control
-        print(state['controls'])
-        print(state['image'])
         stateIns.set_state(state)
         if img_state is None:
             print("Return Empty Graph.")

@@ -3,7 +3,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 import uuid
 
-from layouts.side_controls_layout import stereo_controls, plane_controls
+from layouts.side_controls_layout import stereo_controls, plane_controls, cnn_inference_control
 
 
 def main_side_controls():
@@ -37,7 +37,8 @@ def main_side_controls():
         ),
         dcc.Store(id='view-switch-store', storage_type='session'),
         stereo_controls(),
-        plane_controls()
+        plane_controls(),
+        # cnn_inference_control()
     ], style={
         'minWidth': '100px'
     })

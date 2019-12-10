@@ -122,3 +122,29 @@ def plane_controls(slider_controls=[20, 20, 20]):
             ]
         )
     ])
+
+
+def cnn_inference_control():
+    return html.Div(
+        children=[
+            html.H5("Model Inferencing"),
+            html.Div(style={
+                "border-style": "solid",
+                "border-width": "1px",
+                "border-color": "gray",
+                "margin-top": "10px",
+                "margin-bottom": "5px"
+            }),
+            html.Button('Load Model', id='load-model-btn'),
+            html.Div(
+                id='output-load-model-btn',
+                children=[
+                    html.Div(
+                        id="output-load-model-text",
+                        children=""
+                    ),
+                    html.Button('Get CAM', id='model-prediction-btn')
+                ]
+            )
+        ]
+    )

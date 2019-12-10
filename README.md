@@ -31,11 +31,14 @@ $ docker run -v "$(pwd):/src/" cdrx/pyinstaller-windows
 ```
 
 ## Screenshots
-![screenshot](./misc/sc.png)
+- 3D View Mode
+![screenshot-3d](./misc/sc.png)
+- 2D View Mode
+![screenshot-2d](./misc/sc2.png)
 
 ## TODOs
 - Enable DICOM OCT/Fundus reading directly.
-- Enable 2D image visual.
+- Adding deep learning models for OCT image recognition.
 
 ## Known issues
 - For Windows users, it might encounter a WebGL driver issue from PyQT WebEngine. Inspect the console for the URL will be easier than install the driver.
